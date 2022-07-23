@@ -5,12 +5,16 @@ import { Button, Spacer, Image } from "@nextui-org/react";
 import { useRouter } from "next/router";
 import { ethers } from "ethers";
 import toast, { Toaster } from "react-hot-toast";
+import Card from "../components/Card";
 
 const Home = () => {
-  const contractAddress = "0x3BF8Ab077F2c24AB161d5270E54b49f8BD746a7c";
+  const contractAddress = "0xEa3c45d10A20dE4eBf9fC82eCFBFFDcb69C61F78";
   const contractABI = abi.abi;
   const [images, setImages] = useState(0);
-  const [links, setLinks] = useState([]);
+  const [names, setNames] = useState([]);
+  const [addresses, setAddresses] = useState([]);
+  const [urls, setUrls] = useState([]);
+  const [likes, setLikes] = useState([]);
   const router = useRouter();
 
   useEffect(() => {
@@ -30,8 +34,11 @@ const Home = () => {
           let count = await contract.getTotalImages();
           setImages(count.toNumber())
   
-          let urls = await contract.getImages();
-          setLinks(urls);
+          let [names, addresses, urls, likes] = await contract.getImages();
+          setNames(names);
+          setAddresses(addresses);
+          setUrls(urls);
+          setLikes(likes);
         } else {
           toast.error("Please connect your wallet!");
         }
@@ -82,8 +89,8 @@ const Home = () => {
         </div>
       ) : (
         <div className="grid grid-cols-3 gap-4 p-8">
-          {links.map((img, ind) => (
-            <Image key={ind} showSkeleton maxDelay={10000} src={"http://"+img} alt="image" />
+          {names.map((img, ind) => (
+            <Card key={ind} address={addresses[ind]} name={img} url={"http://"+urls[ind]} likes={likes[ind].toNumber()} />
           ))}
         </div>
       )}

@@ -38,17 +38,23 @@ contract Image {
         image.likes += 1;
     }
 
-    function getImage(uint id) public view returns (string memory) {
+    function getImage(uint id) public view returns (ImageStruct memory) {
         ImageStruct storage image = images[id];
-        return image.url;
+        return image;
     }
 
-    function getImages() public view returns (string[] memory) {
+    function getImages() public view returns (string[] memory, address[] memory, string[] memory, uint[] memory) {
+        string[] memory names = new string[](totalImages);
+        address[] memory addresses = new address[](totalImages);
         string[] memory urls = new string[](totalImages);
+        uint[] memory likes = new uint[](totalImages);
         for (uint i = 0; i < totalImages; i++) {
             ImageStruct storage image = images[i];
+            names[i] = image.name;
+            addresses[i] = image.uploader;
             urls[i] = image.url;
+            likes[i] = image.likes;
         }
-        return urls;
+        return (names, addresses, urls, likes);
     }
 }

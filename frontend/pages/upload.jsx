@@ -6,7 +6,7 @@ import { Button, Input, Spacer, Loading } from "@nextui-org/react";
 import toast, { Toaster } from "react-hot-toast";
 
 export default function Upload() {
-  const contractAddress = "0x3BF8Ab077F2c24AB161d5270E54b49f8BD746a7c";
+  const contractAddress = "0xEa3c45d10A20dE4eBf9fC82eCFBFFDcb69C61F78";
   const contractABI = abi.abi;
   const [images, setImages] = useState(0);
   const [uploading, setUploading] = useState(false);
