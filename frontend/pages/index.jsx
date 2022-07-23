@@ -52,6 +52,30 @@ const Home = () => {
     router.push("/upload");
   }
 
+  async function like(id) {
+    try {
+      const { ethereum } = window;
+
+      if (ethereum) {
+        const provider = new ethers.providers.Web3Provider(ethereum);
+        const signer = provider.getSigner();
+        const contract = new ethers.Contract(
+          contractAddress,
+          contractABI,
+          signer
+        );
+        
+        const txn = await contract.likeImage(id);
+        await txn.wait();
+        toast.success("Successfully liked image!")
+      } else {
+        toast.error("Please connect your wallet!");
+      }
+    } catch (e) {
+      toast.error(e.toString());
+    }
+  }
+
   return (
     <div className="bg-gray-800 min-h-screen">
       <Toaster
@@ -90,7 +114,9 @@ const Home = () => {
       ) : (
         <div className="grid grid-cols-3 gap-4 p-8">
           {names.map((img, ind) => (
-            <Card key={ind} address={addresses[ind]} name={img} url={"http://"+urls[ind]} likes={likes[ind].toNumber()} />
+            <button key={ind} onClick={() => like(ind)}>
+              <Card address={addresses[ind]} name={img} url={"http://"+urls[ind]} likes={likes[ind].toNumber()} />
+            </button>
           ))}
         </div>
       )}
