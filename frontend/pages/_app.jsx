@@ -10,6 +10,7 @@ import Head from "next/head";
 const { chains, provider, webSocketProvider } = configureChains(
   [
     chain.goerli,
+    chain.rinkeby,
   ],
   [
     alchemyProvider({

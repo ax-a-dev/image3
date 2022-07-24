@@ -4,14 +4,15 @@ import abi from "../Image.json";
 import Navbar from "../components/Navbar";
 import { Button, Input, Spacer, Loading } from "@nextui-org/react";
 import toast, { Toaster } from "react-hot-toast";
+import { useNetwork } from "wagmi";
 
 export default function Upload() {
-  const contractAddress = "0xEa3c45d10A20dE4eBf9fC82eCFBFFDcb69C61F78";
   const contractABI = abi.abi;
   const [images, setImages] = useState(0);
   const [uploading, setUploading] = useState(false);
   const [name, setName] = useState("");
   const [url, setURL] = useState("");
+  const { chain, chains } = useNetwork();
 
   useEffect(() => {
     (async () => {
@@ -21,7 +22,11 @@ export default function Upload() {
           const provider = new ethers.providers.Web3Provider(ethereum);
           const signer = provider.getSigner();
           const imageContract = new ethers.Contract(
-            contractAddress,
+            chain.network === "goerli"
+              ? "0xEa3c45d10A20dE4eBf9fC82eCFBFFDcb69C61F78"
+              : chain.network === "rinkeby"
+              ? "0x05D38bA308E90fBE67eda6723a9D9062aC412EcC"
+              : null,
             contractABI,
             signer
           );
@@ -76,7 +81,11 @@ export default function Upload() {
           const provider = new ethers.providers.Web3Provider(ethereum);
           const signer = provider.getSigner();
           const imageContract = new ethers.Contract(
-            contractAddress,
+            chain.network === "goerli"
+              ? "0xEa3c45d10A20dE4eBf9fC82eCFBFFDcb69C61F78"
+              : chain.network === "rinkeby"
+              ? "0x05D38bA308E90fBE67eda6723a9D9062aC412EcC"
+              : null,
             contractABI,
             signer
           );

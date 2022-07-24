@@ -1,14 +1,14 @@
 import Navbar from "../components/Navbar";
 import abi from "../Image.json";
 import { useState, useEffect } from "react";
-import { Button, Spacer, Image } from "@nextui-org/react";
+import { Button, Spacer } from "@nextui-org/react";
 import { useRouter } from "next/router";
 import { ethers } from "ethers";
 import toast, { Toaster } from "react-hot-toast";
 import Card from "../components/Card";
+import { useNetwork } from "wagmi";
 
 const Home = () => {
-  const contractAddress = "0xEa3c45d10A20dE4eBf9fC82eCFBFFDcb69C61F78";
   const contractABI = abi.abi;
   const [images, setImages] = useState(0);
   const [names, setNames] = useState([]);
@@ -16,24 +16,29 @@ const Home = () => {
   const [urls, setUrls] = useState([]);
   const [likes, setLikes] = useState([]);
   const router = useRouter();
+  const { chain, chains } = useNetwork();
 
   useEffect(() => {
     (async () => {
       try {
         const { ethereum } = window;
-  
+
         if (ethereum) {
           const provider = new ethers.providers.Web3Provider(ethereum);
           const signer = provider.getSigner();
           const contract = new ethers.Contract(
-            contractAddress,
+            chain.network === "goerli"
+              ? "0xEa3c45d10A20dE4eBf9fC82eCFBFFDcb69C61F78"
+              : chain.network === "rinkeby"
+              ? "0x05D38bA308E90fBE67eda6723a9D9062aC412EcC"
+              : null,
             contractABI,
             signer
           );
-  
+
           let count = await contract.getTotalImages();
-          setImages(count.toNumber())
-  
+          setImages(count.toNumber());
+
           let [names, addresses, urls, likes] = await contract.getImages();
           setNames(names);
           setAddresses(addresses);
@@ -60,14 +65,18 @@ const Home = () => {
         const provider = new ethers.providers.Web3Provider(ethereum);
         const signer = provider.getSigner();
         const contract = new ethers.Contract(
-          contractAddress,
+          chain.network === "goerli"
+            ? "0xEa3c45d10A20dE4eBf9fC82eCFBFFDcb69C61F78"
+            : chain.network === "rinkeby"
+            ? "0x05D38bA308E90fBE67eda6723a9D9062aC412EcC"
+            : null,
           contractABI,
           signer
         );
-        
+
         const txn = await contract.likeImage(id);
         await txn.wait();
-        toast.success("Successfully liked image!")
+        toast.success("Successfully liked image!");
       } else {
         toast.error("Please connect your wallet!");
       }
@@ -91,7 +100,9 @@ const Home = () => {
       {images === 0 ? (
         <div className="flex flex-col items-center">
           <div className="relative p-8 text-center rounded-lg m-10 w-1/4 bg-slate-700">
-            <h2 className="text-2xl font-medium">There&apos;s nothing here...</h2>
+            <h2 className="text-2xl font-medium">
+              There&apos;s nothing here...
+            </h2>
 
             <p className="mt-4 text-sm text-gray-500">
               Uploaded images will appear here, try uploading one!
@@ -115,7 +126,12 @@ const Home = () => {
         <div className="grid grid-cols-3 gap-4 p-8">
           {names.map((img, ind) => (
             <button key={ind} onClick={() => like(ind)}>
-              <Card address={addresses[ind]} name={img} url={"http://"+urls[ind]} likes={likes[ind].toNumber()} />
+              <Card
+                address={addresses[ind]}
+                name={img}
+                url={"http://" + urls[ind]}
+                likes={likes[ind].toNumber()}
+              />
             </button>
           ))}
         </div>

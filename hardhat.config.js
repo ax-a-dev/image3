@@ -24,5 +24,9 @@ module.exports = {
       url: process.env.ALCHEMY_KEY,
       accounts: [process.env.PRIVATE_KEY],
     },
+    rinkeby: {
+      url: process.env.ALCHEMY_RINKEBY,
+      accounts: [process.env.PRIVATE_KEY]
+    }
   },
 };
